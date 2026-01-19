@@ -18,6 +18,9 @@ for i in range(5):
     animal = Animal(largura//2, altura//2)
     animais.append(animal)
 
+planta = Planta(largura//2, altura//2)
+plantas.append(planta)
+
 #loop de simulação
 rodando = True
 while rodando:
@@ -26,17 +29,34 @@ while rodando:
             rodando = False
 
     tela.fill((255, 255, 255))
-    time.sleep(0.1)
+    time.sleep(0.1) #tempo entre "turnos"
 
     #simula as ações de cada planta
     for planta in plantas:
-        print("ainda não tem plantas")
+        setMosquito(tela, planta.x, planta.y, (0, 230, 0)) #chamar função para representar graficamente
+
+        filho = planta.gastarEnergia() #gasta energia disponível para se manter vivo ou reproduzir
+        if filho == -1:
+            plantas.remove(planta)
+        elif filho != 0:
+            plantas.append(filho) #TODO plantas podem se reproduzir em cima de outras plantas
+
+        planta.fotossintese() #faz fotossintese
+
     #simular as acões de cada animal
     for animal in animais:
-        setMosquito(tela, animal.x, animal.y, (0, 0, 0))
+        setMosquito(tela, animal.x, animal.y, (0, 0, 0)) #chamar função para representar graficamente
+
+        filho = animal.gastarEnergia() #gasta energia disponível para se manter vivo ou reproduzir
+        if filho == -1:
+            animais.remove(animal)
+        elif filho != 0:
+            animais.append(filho)
+
         animal.mover()
 
     pygame.display.flip()
 
 pygame.quit()
 sys.exit()
+
