@@ -32,25 +32,25 @@ class Animal(SerVivo):
                         if self.y - vizinho.y >= 0 or self.y < self.passo * 2:  # se a direção é impossível, tente de novo
                             direcao = 'S'
                             continue
-                    self.y += self.passo
+                    self.y += -self.passo
                 case 'S':
                     for vizinho in vizinhos:
                         if self.y - vizinho.y <= 0 or self.y > self.altura - self.passo * 2:
                             direcao = 'E'
                             continue
-                    self.y += -self.passo
+                    self.y += self.passo
                 case 'E':
                     for vizinho in vizinhos:
                         if self.x - vizinho.x <= 0 or self.x > self.largura - self.passo * 2:
                             direcao = 'W'
                             continue
-                    self.x += -self.passo
+                    self.x += self.passo
                 case 'W':
                     for vizinho in vizinhos:
                         if self.x - vizinho.x >= 0 or self.x < self.passo * 2:
                             direcao = 'N'
                             continue
-                    self.x += self.passo
+                    self.x += -self.passo
             break
 
     def predar(self, plantas, animais):
