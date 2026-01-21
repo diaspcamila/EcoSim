@@ -3,12 +3,12 @@ import random
 import pygame
 from Mundo import Mundo
 from Planta import Planta
-from Mosquito import Mosquito
+from Mosca import Mosca
 
 def main():
     # Configurações do mundo
     largura, altura, escala = 1000, 800, 20
-    mundo = Mundo(largura=largura, altura=altura, escala=escala, seed=42)
+    mundo = Mundo(largura=largura, altura=altura, escala=escala, seed=4)
     mundo.configurar_tela("EcoSim")
 
     # População inicial
@@ -23,7 +23,7 @@ def main():
     for _ in range(5):
         x = random.randint(1, max_cx) * escala
         y = random.randint(1, max_cy) * escala
-        mundo.adicionar_animal(Mosquito(x, y))
+        mundo.adicionar_animal(Mosca(x, y))
 
     # Loop
     clock = pygame.time.Clock()

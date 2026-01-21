@@ -1,3 +1,4 @@
+import random
 from Energia import EnergiaStatus, StatusEnergia
 
 class SerVivo:
@@ -5,7 +6,8 @@ class SerVivo:
     escala = 20  # tamanho do passo
     energia_padrao = 300  # quantidade arbitrária para usar em alguns momentos, o suficiente para o ser viver por um bom tempo
     energia_reproducao = 500  # quantidade de energia necessária para o ser se reproduzir
-    custo_energetico = 6  # custo energético por turno para se manter vivo
+    custo_energetico = 7  # custo energético por turno para se manter vivo
+    direcao = 'E' #última direção na qual se moveu
 
     def __init__(self, x, y):
         self.x = x
@@ -21,3 +23,51 @@ class SerVivo:
             return StatusEnergia(EnergiaStatus.VIVO)
         else: #morrer
             return StatusEnergia(EnergiaStatus.MORTO)
+
+    def mover(self, plantas, animais):
+        seres = [s for s in plantas + animais if s != self]
+
+        movimentos = ['N', 'S', 'E', 'W']
+        random.shuffle(movimentos)
+
+        moveu = False
+
+        for aponta in movimentos:
+            #calcula uma coordenada para andar
+            tx, ty = self.x, self.y
+            match aponta:
+                case 'N':
+                    ty -= self.escala
+                case 'S':
+                    ty += self.escala
+                case 'E':
+                    tx += self.escala
+                case 'W':
+                    tx -= self.escala
+
+            #verifica a borda do mundo
+            if not (self.escala <= tx <= self.largura - self.escala and self.escala <= ty <= self.altura - self.escala):
+                continue  #se bateu na borda, repete o loop
+
+            #verificar colisão com plantas e animais
+            colisao = False
+            for ser in seres:
+                if abs(tx - ser.x) < self.escala and abs(ty - ser.y) < self.escala:
+                    colisao = True
+                    break
+            if colisao:
+                continue
+
+            #anda!
+            self.x = tx
+            self.y = ty
+            self.direcao = aponta #salva o sentido em que se moveu
+            moveu = True
+            break
+
+        #se tentou as 4 direções e não moveu, morre
+        if not moveu:
+            if self in plantas:
+                plantas.remove(self)
+            elif self in animais:
+                animais.remove(self)

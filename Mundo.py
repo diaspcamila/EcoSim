@@ -1,7 +1,7 @@
 import random
 import pygame
 from Energia import EnergiaStatus
-from Graficos import setMosquito
+from Graficos import setMosca
 from SerVivo import SerVivo
 from Planta import Planta
 from Animal import Animal
@@ -34,10 +34,10 @@ class Mundo:
         self.tela.fill((255, 255, 255))
         # plantas em verde
         for p in self.plantas:
-            setMosquito(self.tela, p.x, p.y, (0, 230, 0))
+            setMosca(self.tela, p.x, p.y, (0, 230, 0))
         # animais em preto
         for a in self.animais:
-            setMosquito(self.tela, a.x, a.y, (0, 0, 0))
+            setMosca(self.tela, a.x, a.y, (0, 0, 0))
         pygame.display.flip()
 
     def adicionar_planta(self, planta: Planta):
@@ -70,13 +70,11 @@ class Mundo:
 
     def _spawn_filho(self, pai):
         filho = type(pai)(pai.x, pai.y)
-        # Se for um animal afaste um pouco para não sobrepor
-        if hasattr(filho, 'mover'):
-            for _ in range(15):
+        if hasattr(filho, 'fotossintese'):
+            for i in range(3):
                 filho.mover(self.plantas, self.animais)
         else:
-            # para plantas posiciona em célula vizinha livre
-            filho.x, filho.y = self.colocar_perto(pai.x, pai.y)
+            filho.mover(self.plantas, self.animais)
         return filho
 
     def tick(self):

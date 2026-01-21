@@ -1,8 +1,5 @@
 import pygame
-import sys
-import time
 from SerVivo import *
-from Graficos import *
 
 class Planta(SerVivo):
     alcance_vizinhos = SerVivo.escala * 2
