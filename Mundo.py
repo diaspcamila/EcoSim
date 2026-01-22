@@ -46,15 +46,6 @@ class Mundo:
     def adicionar_animal(self, animal: Animal):
         self.animais.append(animal)
 
-    def entidades(self):
-        return self.plantas + self.animais
-
-    def esta_livre(self, x: int, y: int) -> bool:
-        for e in self.entidades():
-            if e.x == x and e.y == y:
-                return False
-        return True
-
     def _spawn_filho(self, pai):
         filho = type(pai)(pai.x, pai.y)
         if hasattr(filho, 'fotossintese'):
