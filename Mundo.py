@@ -55,19 +55,6 @@ class Mundo:
                 return False
         return True
 
-    def _clamp(self, v: int, vmin: int, vmax: int) -> int:
-        return max(vmin, min(vmax, v))
-
-    def colocar_perto(self, x: int, y: int, max_dist_celulas: int = 2) -> tuple[int, int]:
-        for d in range(1, max_dist_celulas + 1):
-            for dx in range(-d, d + 1):
-                for dy in range(-d, d + 1):
-                    nx = self._clamp(x + dx * self.escala, self.escala, self.largura - self.escala)
-                    ny = self._clamp(y + dy * self.escala, self.escala, self.altura - self.escala)
-                    if self.esta_livre(nx, ny):
-                        return nx, ny
-        return x, y
-
     def _spawn_filho(self, pai):
         filho = type(pai)(pai.x, pai.y)
         if hasattr(filho, 'fotossintese'):
