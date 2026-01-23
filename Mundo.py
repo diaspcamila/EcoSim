@@ -5,6 +5,8 @@ from Graficos import setMosca
 from SerVivo import SerVivo
 from Planta import Planta
 from Animal import Animal
+from Presa import Presa
+from Predador import Predador
 
 class Mundo:
     #seed bom p debug
@@ -49,7 +51,7 @@ class Mundo:
     def _spawn_filho(self, pai):
         filho = type(pai)(pai.x, pai.y)
         if hasattr(filho, 'fotossintese'):
-            for i in range(3):
+            for i in range(2):
                 filho.mover(self.plantas, self.animais)
         else:
             filho.mover(self.plantas, self.animais)

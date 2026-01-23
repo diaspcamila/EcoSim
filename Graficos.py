@@ -35,7 +35,7 @@ def setBresenham(superficie, x0, y0, x1, y1, cor):
             d -= 2 * dx
         d += 2 * dy
 
-def draw_circle(tela, xc, yc, r, cor):
+def setCircle(tela, xc, yc, r, cor):
     x = 0
     y = r
     d = 1 - r
@@ -57,7 +57,7 @@ def draw_circle(tela, xc, yc, r, cor):
             y -= 1
         x += 1
 
-def draw_ellipse(tela, xc, yc, rx, ry, cor):
+def setEllipse(tela, xc, yc, rx, ry, cor):
     x = 0
     y = ry
 
@@ -109,6 +109,7 @@ def setBordaRetangulo(superficie, x, y, w, h, cor):
     setBresenham(superficie, x+w, y+h, x, y+h, cor)
     setBresenham(superficie, x, y+h, x, y, cor)
 
+#preenchimento
 def setFloodFill(superficie, x, y, cor_preenchimento, cor_borda):
     largura = superficie.get_width()
     altura = superficie.get_height()
@@ -181,86 +182,7 @@ def setScanlineFill(superficie, pontos, cor_preenchimento):
                 for x in range(x_inicio, x_fim + 1):
                     setPixel(superficie, x, y, cor_preenchimento)
 
-def draw_circle(tela, xc, yc, r, cor):
-    x = 0
-    y = r
-    d = 1 - r
-
-    while x <= y:
-        pontos = [
-            ( xc+x, yc+y), ( xc-x, yc+y),
-            ( xc+x, yc-y), ( xc-x, yc-y),
-            ( xc+y, yc+x), ( xc-y, yc+x),
-            ( xc+y, yc-x), ( xc-y, yc-x)
-        ]
-        for px, py in pontos:
-            setPixel(tela, px, py, cor)
-
-        if d < 0:
-            d += 2*x + 3
-        else:
-            d += 2*(x - y) + 5
-            y -= 1
-        x += 1
-
-def draw_ellipse(tela, xc, yc, rx, ry, cor):
-    x = 0
-    y = ry
-
-    rx2 = rx*rx
-    ry2 = ry*ry
-    d1 = ry2 - rx2*ry + 0.25*rx2
-
-    dx = 2*ry2*x
-    dy = 2*rx2*y
-
-    # Região 1
-    while dx < dy:
-        plot_ellipse_points(tela, xc, yc, x, y, cor)
-        if d1 < 0:
-            x += 1
-            dx += 2*ry2
-            d1 += dx + ry2
-        else:
-            x += 1
-            y -= 1
-            dx += 2*ry2
-            dy -= 2*rx2
-            d1 += dx - dy + ry2
-
-    # Região 2
-    d2 = (ry2*(x+0.5)**2) + (rx2*(y-1)**2) - rx2*ry2
-    while y >= 0:
-        plot_ellipse_points(tela, xc, yc, x, y, cor)
-        if d2 > 0:
-            y -= 1
-            dy -= 2*rx2
-            d2 += rx2 - dy
-        else:
-            y -= 1
-            x += 1
-            dx += 2*ry2
-            dy -= 2*rx2
-            d2 += dx - dy + rx2
-
-def plot_ellipse_points(tela, xc, yc, x, y, cor):
-    setPixel(tela, xc+x, yc+y, cor)
-    setPixel(tela, xc-x, yc+y, cor)
-    setPixel(tela, xc+x, yc-y, cor)
-    setPixel(tela, xc-x, yc-y, cor)
-
-def setPlanta(tela, x, y):
-    verde_escuro = (0, 140, 0)
-    verde = (0, 180, 0)
-
-    setBresenham(tela, x, y, x, y-30, verde_escuro)
-
-    draw_ellipse(tela, x-10, y-15, 10, 5, verde_escuro)
-    setFloodFill(tela, x-10, y-15, verde, verde_escuro)
-
-    draw_ellipse(tela, x+10, y-20, 10, 5, verde_escuro)
-    setFloodFill(tela, x+10, y-20, verde, verde_escuro)
-
+#transformações geométricas
 def draw_ellipse_pivot(tela, px, py, cx, cy, rx, ry, ang, cor):
     passos = 80
 
@@ -297,6 +219,19 @@ def desenhar_asa(tela, x, y, lado, ang, cor):
         cor=cor
     )
 
+#animais e plantas
+def setPlanta(tela, x, y):
+    verde_escuro = (0, 140, 0)
+    verde = (0, 180, 0)
+
+    setBresenham(tela, x, y, x, y-30, verde_escuro)
+
+    setEllipse(tela, x-10, y-15, 10, 5, verde_escuro)
+    setFloodFill(tela, x-10, y-15, verde, verde_escuro)
+
+    setEllipse(tela, x+10, y-20, 10, 5, verde_escuro)
+    setFloodFill(tela, x+10, y-20, verde, verde_escuro)
+
 def setMosca(tela, x, y, fase):
     preto = (0, 0, 0)
     cinza = (120, 120, 120)
@@ -308,5 +243,21 @@ def setMosca(tela, x, y, fase):
     desenhar_asa(tela, x, y, -1, ang, branco)
     desenhar_asa(tela, x, y,  1, ang, branco)
 
-    draw_circle(tela, x, y-6, 5, preto)
+    setCircle(tela, x, y-6, 5, preto)
     setFloodFill(tela, x, y-6, cinza, preto)
+
+def setSapo(tela, x, y):
+    azul = (0,200,230)
+    borda = (0,20,80)
+    branco = (255,255,255)
+
+    # Corpo (elipse)
+    setEllipse(tela, x, y+10, 25, 18, borda)
+    setFloodFill(tela, x, y+10, azul, borda)
+
+    # Cabeça (círculo)
+    setCircle(tela, x, y-5, 14, borda)
+    setFloodFill(tela, x, y-5, azul, borda)
+    # Olhos
+    setCircle(tela, x-6, y-10, 3, branco)
+    setCircle(tela, x+6, y-10, 3, branco)
