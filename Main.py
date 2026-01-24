@@ -11,7 +11,7 @@ def main():
 
     # Configurações do mundo
     largura, altura, escala = 1000, 800, 20
-    mundo = Mundo(largura=largura, altura=altura, escala=escala, seed=1)
+    mundo = Mundo(largura=largura, altura=altura, escala=escala)
     mundo.configurar_tela("EcoSim")
 
     # População inicial
@@ -40,6 +40,8 @@ def main():
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 rodando = False
+
+
 
         mundo.tick()
         mundo.desenhar()

@@ -1,4 +1,3 @@
-import pygame
 from SerVivo import *
 from Graficos import setPlanta
 
