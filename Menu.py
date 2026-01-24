@@ -14,17 +14,14 @@ BORDA = (255, 255, 255)
 BOTAO = (21, 0, 76)
 BOTAO_HOVER = (41, 14, 113)
 
-# ---------------- ESTADOS ----------------
 bioma = 0              # 0 floresta | 1 mar
 qtd_bichos = 5
 
-# ---------------- BOTÕES ----------------
 btn_start = (275, 220, 350, 70)
 btn_bioma  = (275, 320, 350, 70)
 btn_qtd    = (275, 420, 350, 70)
 btn_sair   = (275, 520, 350, 70)
 
-# ---------------- FUNÇÕES ----------------
 def dentro(mx, my, botao):
     x, y, w, h = botao
     return x <= mx <= x+w and y <= my <= y+h
@@ -35,24 +32,20 @@ def desenhar_botao(botao, cor):
     setFloodFill(tela, x+3, y+3, cor, BORDA)
 
 def desenhar_tela():
-    # fundo
     setPixel(tela, 0, 0, (0, 0, 0))
     setFloodFill(tela, 0, 0, FUNDO, BORDA)
 
-    # botões
     desenhar_botao(btn_start, BOTAO)
     desenhar_botao(btn_bioma, BOTAO)
     desenhar_botao(btn_qtd, BOTAO)
     desenhar_botao(btn_sair, BOTAO)
 
-    # textos fixos
     draw_text(tela, 247, 80, "ECO SIM", (21,0,76), escala=9, setPixel=setPixel)
     draw_text(tela, 390, 248, "INICIO", (255,255,255), escala=3, setPixel=setPixel)
     draw_text(tela, 300, 348, "BIOMA", (255,255,255), escala=3, setPixel=setPixel)
     draw_text(tela, 300, 448, "ANIMAIS", (255,255,255), escala=3, setPixel=setPixel)
     draw_text(tela, 410, 548, "SAIR", (255,255,255), escala=3, setPixel=setPixel)
 
-    # textos variáveis
     if bioma == 0:
         draw_text(tela, 490, 348, "FLORESTA", (200, 200, 200), 2, setPixel=setPixel)
     else:
@@ -61,10 +54,8 @@ def desenhar_tela():
     draw_text(tela, 560, 448, str(qtd_bichos), (200, 200, 200), 3, setPixel=setPixel)
     pygame.display.flip()
 
-# ---------------- DESENHO INICIAL ----------------
 desenhar_tela()
 
-# ---------------- LOOP ----------------
 clock = pygame.time.Clock()
 rodando = True
 
@@ -79,7 +70,6 @@ while rodando:
     else:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
-    # ---------- DESENHA TELA COM HOVER ----------
     setPixel(tela, 0, 0, (0, 0, 0))
     setFloodFill(tela, 0, 0, FUNDO, BORDA)
 
@@ -103,7 +93,6 @@ while rodando:
     else:
         desenhar_botao(btn_sair, BOTAO)
 
-    # textos
     draw_text(tela, 247, 80, "ECO SIM", (0,0,0), escala=9, setPixel=setPixel)
     draw_text(tela, 390, 248, "INICIO", (255,255,255), escala=3, setPixel=setPixel)
     draw_text(tela, 300, 348, "BIOMA", (255,255,255), escala=3, setPixel=setPixel)
@@ -130,7 +119,7 @@ while rodando:
 
             if dentro(mx, my, btn_start):
                 pygame.quit()
-                Main.main()  # depois adapta a main
+                Main.main()  # depois adapta a main com bioma e qtd_bichos
 
             elif dentro(mx, my, btn_bioma):
                 bioma = 1 - bioma

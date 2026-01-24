@@ -109,6 +109,32 @@ def setBordaRetangulo(superficie, x, y, w, h, cor):
     setBresenham(superficie, x+w, y+h, x, y+h, cor)
     setBresenham(superficie, x, y+h, x, y, cor)
 
+def hexagono_largo(cx, cy, w, h):
+    return [
+        (cx - w//2, cy),
+        (cx - w//4, cy - h),
+        (cx + w//4, cy - h),
+        (cx + w//2, cy),
+        (cx + w//4, cy + h),
+        (cx - w//4, cy + h),
+    ]
+
+def trapezio_pequeno(cx, cy, topo, base, h):
+    return [
+        (cx - topo//2, cy),
+        (cx + topo//2, cy),
+        (cx + base//2, cy + h),
+        (cx - base//2, cy + h),
+    ]
+
+def losango(cx, cy, w, h):
+    return [
+        (cx,     cy - h),  # cima
+        (cx + w, cy),      # direita
+        (cx,     cy + h),  # baixo
+        (cx - w, cy)       # esquerda
+    ]
+
 #preenchimento
 def setFloodFill(superficie, x, y, cor_preenchimento, cor_borda):
     largura = superficie.get_width()
@@ -201,20 +227,21 @@ def draw_ellipse_pivot(tela, px, py, cx, cy, rx, ry, ang, cor):
 
         setPixel(tela, int(xr), int(yr), cor)
 
-def desenhar_asa(tela, x, y, lado, ang, cor):
+def desenhar_asa(tela, x, y, lado, ang, cor, s):
     # ponto onde a asa gruda na cabeça
-    px = x + lado * 4
-    py = y - 6
+    px = x + int(lado * 4 * s)
+    py = y - int(6 * s)
 
-    # centro da elipse ANTES da rotação (asa aberta)
-    cx = px + lado * 12
+    # centro da elipse antes da rotação
+    cx = px + int(lado * 12 * s)
     cy = py
 
     draw_ellipse_pivot(
         tela,
-        px, py,        # pivô (grudado)
-        cx, cy,        # centro da elipse
-        rx=12, ry=4,
+        px, py,
+        cx, cy,
+        rx=int(12 * s),
+        ry=int(4 * s),
         ang=ang * lado,
         cor=cor
     )
@@ -224,15 +251,47 @@ def setPlanta(tela, x, y):
     verde_escuro = (0, 140, 0)
     verde = (0, 180, 0)
 
-    setBresenham(tela, x, y, x, y-30, verde_escuro)
+    s = 1.3  # escala da planta
 
-    setEllipse(tela, x-10, y-15, 10, 5, verde_escuro)
-    setFloodFill(tela, x-10, y-15, verde, verde_escuro)
+    def sx(dx): return int(dx * s)
+    def sy(dy): return int(dy * s)
 
-    setEllipse(tela, x+10, y-20, 10, 5, verde_escuro)
-    setFloodFill(tela, x+10, y-20, verde, verde_escuro)
+    # caule
+    setBresenham(tela, x + sx(-2), y + sy(-15), x + sx(1),  y + sy(-25), verde_escuro)
+    setBresenham(tela, x + sx(-1), y + sy(0),   x + sx(-3), y + sy(-15), verde_escuro)
 
-def setMosca(tela, x, y, fase):
+    # ---------- folha esquerda ----------
+    folha_esq = [
+        (x + sx(-10), y + sy(-20)),
+        (x + sx(-2),  y + sy(-15)),
+        (x + sx(-10), y + sy(-10)),
+        (x + sx(-18), y + sy(-15))
+    ]
+
+    for i in range(4):
+        x0, y0 = folha_esq[i]
+        x1, y1 = folha_esq[(i+1) % 4]
+        setBresenham(tela, x0, y0, x1, y1, verde_escuro)
+
+    setScanlineFill(tela, folha_esq, verde)
+
+    # ---------- folha direita ----------
+    folha_dir = [
+        (x + sx(7),  y + sy(-25)),
+        (x + sx(15), y + sy(-20)),
+        (x + sx(7),  y + sy(-15)),
+        (x + sx(1),  y + sy(-20))
+    ]
+
+    for i in range(4):
+        x0, y0 = folha_dir[i]
+        x1, y1 = folha_dir[(i+1) % 4]
+        setBresenham(tela, x0, y0, x1, y1, verde_escuro)
+
+    setScanlineFill(tela, folha_dir, verde)
+
+
+def setMosca(tela, x, y, fase, s=0.6):
     preto = (0, 0, 0)
     cinza = (120, 120, 120)
     branco = (230, 230, 230)
@@ -240,24 +299,130 @@ def setMosca(tela, x, y, fase):
     max_ang = math.radians(70)
     ang = max_ang * (abs(math.sin(fase)))
 
-    desenhar_asa(tela, x, y, -1, ang, branco)
-    desenhar_asa(tela, x, y,  1, ang, branco)
+    # asas
+    desenhar_asa(tela, x, y, -1, ang, branco, s)
+    desenhar_asa(tela, x, y,  1, ang, branco, s)
 
-    setCircle(tela, x, y-6, 5, preto)
-    setFloodFill(tela, x, y-6, cinza, preto)
+    # cabeça
+    setCircle(tela, x, y - int(6*s), int(5*s), preto)
+    setFloodFill(tela, x, y - int(6*s), cinza, preto)
 
-def setSapo(tela, x, y):
+
+def setSapo(tela, x, y, fase, lingua):
     azul = (0,200,230)
     borda = (0,20,80)
     branco = (255,255,255)
+    vermelho = (255, 0, 0)
 
-    # Corpo (elipse)
-    setEllipse(tela, x, y+10, 25, 18, borda)
-    setFloodFill(tela, x, y+10, azul, borda)
+    # ---------- CORPO ----------
+    corpo = trapezio_pequeno(x, y-14, topo=26, base=40, h=20)
 
-    # Cabeça (círculo)
-    setCircle(tela, x, y-5, 14, borda)
-    setFloodFill(tela, x, y-5, azul, borda)
-    # Olhos
-    setCircle(tela, x-6, y-10, 3, branco)
-    setCircle(tela, x+6, y-10, 3, branco)
+    for i in range(len(corpo)):
+        x0, y0 = corpo[i]
+        x1, y1 = corpo[(i+1) % len(corpo)]
+        setBresenham(tela, x0, y0, x1, y1, borda)
+
+    setScanlineFill(tela, corpo, azul)
+
+    # ---------- CABEÇA ----------
+    cabeca = hexagono_largo(x, y-30, w=50, h=16)
+
+    for i in range(len(cabeca)):
+        x0, y0 = cabeca[i]
+        x1, y1 = cabeca[(i+1) % len(cabeca)]
+        setBresenham(tela, x0, y0, x1, y1, borda)
+
+    setScanlineFill(tela, cabeca, azul)
+
+    olho_y = y - 47
+    dx = 12
+
+    # cores
+    branco = (255,255,255)
+
+    piscar = (int(fase) % 8 == 0)
+
+    for lado in (-1, 1):
+        cx = x + lado * dx
+
+        setCircle(tela, cx, olho_y, 5, azul)
+        setFloodFill(tela, cx, olho_y, azul, borda)
+
+
+        if piscar:
+            # olho fechado
+            setBresenham(tela, cx - 4, olho_y, cx + 4, olho_y, borda)
+        else:
+
+            # branco do olho
+            setCircle(tela, cx, olho_y, 5, borda)
+            setFloodFill(tela, cx, olho_y, branco, borda)
+
+            # pupila
+            setCircle(tela, cx, olho_y, 2, (0,0,0))
+            setFloodFill(tela, cx, olho_y, (0,0,0), borda)
+
+
+    # ---------- PATAS ----------
+    chao = y + 7
+    altura = 12
+    sep = 14  
+
+    # -------- pata esquerda --------
+    pata_esq = [
+        (x - (14 + sep), chao),
+        (x - (2  + sep), chao),
+        (x - (8  + sep), chao - altura)
+    ]
+
+    for i in range(3):
+        x0, y0 = pata_esq[i]
+        x1, y1 = pata_esq[(i+1) % 3]
+        setBresenham(tela, x0, y0, x1, y1, borda)
+
+    setScanlineFill(tela, pata_esq, azul)
+
+    # -------- pata direita --------
+    pata_dir = [
+        (x + (2  + sep), chao),
+        (x + (14 + sep), chao),
+        (x + (8  + sep), chao - altura)
+    ]
+
+    for i in range(3):
+        x0, y0 = pata_dir[i]
+        x1, y1 = pata_dir[(i+1) % 3]
+        setBresenham(tela, x0, y0, x1, y1, borda)
+
+    setScanlineFill(tela, pata_dir, azul)
+
+    # ---------- BOCA (LINHAS) ----------
+    frente_y = y - 22
+    dist = 10          
+
+    setBresenham(tela, x - dist, frente_y, x - dist - 10, frente_y - 8, borda)
+    setBresenham(tela, x + dist, frente_y, x + dist + 10, frente_y - 8, borda)
+    setBresenham(tela, x - dist, frente_y, x + dist, frente_y, borda)
+
+    # ---------- BRAÇO (LINHAS) ----------
+    frente_y = y
+    dist = 4
+
+    # braço esquerdo
+    x1, y1 = x - dist, frente_y
+    x2, y2 = x - dist - 8, frente_y - 10
+    setBresenham(tela, x1, y1+4, x2+1, y2, borda)
+
+    setBresenham(tela, x2, y2+12, x2 + 4, y2 + 6, borda)
+
+    # braço direito
+    x3, y3 = x + dist, frente_y
+    x4, y4 = x + dist + 8, frente_y - 10
+    setBresenham(tela, x3, y3+4, x4-1, y4, borda)
+
+    setBresenham(tela, x4, y4+12, x4 - 4, y4 + 6, borda)
+
+    if lingua > 0:
+        setBresenham(tela, x-1, frente_y, x, frente_y - 20, vermelho)
+        setBresenham(tela, x, frente_y, x, frente_y - 20, vermelho)
+        setBresenham(tela, x+1, frente_y, x, frente_y - 20, vermelho)
