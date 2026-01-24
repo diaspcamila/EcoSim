@@ -77,7 +77,6 @@ class Mundo:
         except Exception as e:
             print(f"[Mundo.desenhar] Erro ao renderizar viewport: {e}")
             traceback.print_exc()
-
         pygame.display.flip()
 
     def adicionar_planta(self, planta: Planta):

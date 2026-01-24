@@ -1,3 +1,4 @@
+import pygame
 import sys
 import Main
 from Graficos import *
@@ -44,10 +45,26 @@ def desenhar_tela():
     desenhar_botao(btn_qtd, BOTAO)
     desenhar_botao(btn_sair, BOTAO)
 
-#  desenho inicial
+    # textos fixos
+    draw_text(tela, 247, 80, "ECO SIM", (21,0,76), escala=9, setPixel=setPixel)
+    draw_text(tela, 390, 248, "INICIO", (255,255,255), escala=3, setPixel=setPixel)
+    draw_text(tela, 300, 348, "BIOMA", (255,255,255), escala=3, setPixel=setPixel)
+    draw_text(tela, 300, 448, "ANIMAIS", (255,255,255), escala=3, setPixel=setPixel)
+    draw_text(tela, 410, 548, "SAIR", (255,255,255), escala=3, setPixel=setPixel)
+
+    # textos variáveis
+    if bioma == 0:
+        draw_text(tela, 490, 348, "FLORESTA", (200, 200, 200), 2, setPixel=setPixel)
+    else:
+        draw_text(tela, 490, 348, "MAR", (200, 200, 200), 2, setPixel=setPixel)
+
+    draw_text(tela, 560, 448, str(qtd_bichos), (200, 200, 200), 3, setPixel=setPixel)
+    pygame.display.flip()
+
+# ---------------- DESENHO INICIAL ----------------
 desenhar_tela()
 
-# loop
+# ---------------- LOOP ----------------
 clock = pygame.time.Clock()
 rodando = True
 
