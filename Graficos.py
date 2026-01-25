@@ -166,7 +166,8 @@ def setFloodFill(superficie, x, y, cor_preenchimento, cor_borda):
             pygame.display.flip()
 
 def setScanlineFill(superficie, pontos, cor_preenchimento):
-    # Encontra Y mínimo e máximo
+    # Encontra Y mínimo e máximo4
+
     ys = [p[1] for p in pontos]
     y_min = min(ys)
     y_max = max(ys)

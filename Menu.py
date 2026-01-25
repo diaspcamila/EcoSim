@@ -15,7 +15,7 @@ BOTAO = (21, 0, 76)
 BOTAO_HOVER = (41, 14, 113)
 
 bioma = 0              # 0 floresta | 1 mar
-qtd_bichos = 5
+qtd_entidades = 21  # 21 35 49
 
 btn_start = (275, 220, 350, 70)
 btn_bioma  = (275, 320, 350, 70)
@@ -51,7 +51,7 @@ def desenhar_tela():
     else:
         draw_text(tela, 490, 348, "MAR", (200, 200, 200), 2, setPixel=setPixel)
 
-    draw_text(tela, 560, 448, str(qtd_bichos), (200, 200, 200), 3, setPixel=setPixel)
+    draw_text(tela, 560, 448, str(qtd_entidades), (200, 200, 200), 3, setPixel=setPixel)
     pygame.display.flip()
 
 desenhar_tela()
@@ -104,7 +104,7 @@ while rodando:
     else:
         draw_text(tela, 490, 348, "MAR", (200,200,200), 2, setPixel=setPixel)
 
-    draw_text(tela, 560, 448, str(qtd_bichos), (200,200,200), 3, setPixel=setPixel)
+    draw_text(tela, 560, 448, str(qtd_entidades), (200,200,200), 3, setPixel=setPixel)
 
     pygame.display.flip()
 
@@ -119,19 +119,19 @@ while rodando:
 
             if dentro(mx, my, btn_start):
                 pygame.quit()
-                Main.main()  # depois adapta a main com bioma e qtd_bichos
+                Main.main(qtd_entidades) # inicia o jogo com a qtd de entidades selecionada
 
             elif dentro(mx, my, btn_bioma):
                 bioma = 1 - bioma
                 desenhar_tela()
 
             elif dentro(mx, my, btn_qtd):
-                if qtd_bichos == 5:
-                    qtd_bichos = 10
-                elif qtd_bichos == 10:
-                    qtd_bichos = 20
+                if qtd_entidades == 21:
+                    qtd_entidades = 35
+                elif qtd_entidades == 35:
+                    qtd_entidades = 49
                 else:
-                    qtd_bichos = 5
+                    qtd_entidades = 21
                 desenhar_tela()
 
             elif dentro(mx, my, btn_sair):

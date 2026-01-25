@@ -6,7 +6,7 @@ from Planta import Planta
 from Presa import Presa
 from Predador import Predador
 
-def main():
+def main(qtd_entidades):
     pygame.init()
 
     # Configurações do mundo
@@ -14,21 +14,21 @@ def main():
     mundo = Mundo(largura=largura, altura=altura, escala=escala)
     mundo.configurar_tela("EcoSim")
 
-    # População inicial
+    # População inicial | x,2x,4x
     max_cx = (largura // escala) - 1
     max_cy = (altura // escala) - 1
 
-    for _ in range(25):
+    for _ in range((qtd_entidades//7)*4):
         x = random.randint(1, max_cx) * escala
         y = random.randint(1, max_cy) * escala
         mundo.adicionar_planta(Planta(x, y))
 
-    for _ in range(12):
+    for _ in range((qtd_entidades//7)*2):
         x = random.randint(1, max_cx) * escala
         y = random.randint(1, max_cy) * escala
         mundo.adicionar_animal(Presa(x, y))
 
-    for _ in range(5):
+    for _ in range(qtd_entidades//7):
         x = random.randint(1, max_cx) * escala
         y = random.randint(1, max_cy) * escala
         mundo.adicionar_animal(Predador(x, y))
