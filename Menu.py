@@ -1,6 +1,6 @@
 import pygame
 import sys
-import Main
+import Inicializacao
 from Graficos import *
 from Fonte import *
 
@@ -119,7 +119,7 @@ while rodando:
 
             if dentro(mx, my, btn_start):
                 pygame.quit()
-                Main.main(qtd_entidades) # inicia o jogo com a qtd de entidades selecionada
+                Inicializacao.main(qtd_entidades) # inicia o jogo com a qtd de entidades selecionada
 
             elif dentro(mx, my, btn_bioma):
                 bioma = 1 - bioma
