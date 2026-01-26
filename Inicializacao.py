@@ -5,6 +5,7 @@ from Mundo import Mundo
 from Planta import Planta
 from Presa import Presa
 from Predador import Predador
+from Graficos import *
 
 def main(qtd_entidades):
     pygame.init()
@@ -17,6 +18,16 @@ def main(qtd_entidades):
     # População inicial | x,2x,4x
     max_cx = (largura // escala) - 1
     max_cy = (altura // escala) - 1
+
+    textura_fundo = pygame.Surface((largura, altura))
+    print("surface criada")
+
+    textura_floresta(textura_fundo)
+    print("textura gerada")
+
+    mundo.textura_fundo = textura_fundo
+    print("textura atribuída ao mundo")
+
 
     for _ in range((qtd_entidades//7)*4):
         x = random.randint(1, max_cx) * escala

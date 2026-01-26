@@ -19,6 +19,7 @@ class Mundo:
         self.plantas: list[Planta] = []
         self.animais: list[Animal] = []
         self.tela: pygame.Surface | None = None
+        self.textura_fundo = None
 
     # Render
     def configurar_tela(self, titulo="EcoSim"):
@@ -29,7 +30,11 @@ class Mundo:
     def desenhar(self):
         if self.tela is None:
             return
-        self.tela.fill((255, 255, 255))
+        if self.textura_fundo:
+            self.tela.blit(self.textura_fundo, (0, 0))
+        else:
+            self.tela.fill((255, 255, 255))
+
         for p in self.plantas:
             p.desenhar(self.tela)
         for a in self.animais:
