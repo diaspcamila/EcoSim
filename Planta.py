@@ -27,4 +27,4 @@ class Planta(SerVivo):
         if bioma == 0:
             setPlanta(tela, self.x, self.y)
         else:
-            setAlga(tela, self.x, self.y)
+            setAlga(tela, self.x, self.y, self.fase)

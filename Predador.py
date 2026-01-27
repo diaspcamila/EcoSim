@@ -23,7 +23,8 @@ class Predador(Animal):
         if bioma == 0:
             setSapo(tela, self.x, self.y, self.fase, self.lingua)
         else:
-            setTubarao(tela, self.x, self.y, self.fase)
+            setTubarao(tela, self.x, self.y, self.fase, self.lingua > 0)
+
 
     def atualizar(self):
         self.fase += 0.5

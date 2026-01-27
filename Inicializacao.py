@@ -18,7 +18,6 @@ def main(qtd_entidades, bioma):
     max_cy = (altura // escala) - 1
 
     textura_fundo = pygame.Surface((largura, altura))
-    print("surface criada")
 
     if bioma == 0:
         textura_floresta(textura_fundo)
@@ -28,7 +27,6 @@ def main(qtd_entidades, bioma):
     print("textura gerada")
 
     mundo.textura_fundo = textura_fundo
-    print("textura atribuída ao mundo")
 
     for _ in range((qtd_entidades//7)*4):
         x = random.randint(1, max_cx) * escala

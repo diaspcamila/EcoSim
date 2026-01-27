@@ -1,7 +1,7 @@
 import pygame
 import traceback
 from Energia import EnergiaStatus
-from Graficos import setPixel, setScanlineFill, setBordaRetangulo
+from Graficos import setPixel, setScanlineFill, setBordaRetangulo, setPixelGrosso
 from SerVivo import SerVivo
 from Planta import Planta
 from Animal import Animal
@@ -62,24 +62,24 @@ class Mundo:
         #desenhando viewport
         w = vxmax - vxmin
         h = vymax - vymin
-        setScanlineFill(self.tela, coords, (0, 0, 0))
-        setBordaRetangulo(self.tela, vxmin, vymin, w, h, (255, 255, 255))
+        setScanlineFill(self.tela, coords, (155, 255, 155))
+        setBordaRetangulo(self.tela, vxmin, vymin, w, h, (0, 140, 0))
 
         try:
             for p in self.plantas:
-                cor = (0, 255, 0)
+                cor = (0, 180, 0)
                 x, y = aplica_transformacao(m, [(p.x, p.y)])[0]
                 if vxmin <= int(x) <= vxmax and vymin <= int(y) <= vymax:
-                    setPixel(self.tela, int(x), int(y), cor)
+                    setPixelGrosso(self.tela, int(x), int(y), cor)
 
             for a in self.animais:
                 if isinstance(a, Predador):
-                    cor = (0, 150, 250)
+                    cor = (0, 170, 200)
                 else:
-                    cor = (205, 150, 150)
+                    cor = (50, 50, 50)
                 x, y = aplica_transformacao(m, [(a.x, a.y)])[0]
                 if vxmin <= int(x) <= vxmax and vymin <= int(y) <= vymax:
-                    setPixel(self.tela, int(x), int(y), cor)
+                    setPixelGrosso(self.tela, int(x), int(y), cor)
 
         except Exception:
             traceback.print_exc()

@@ -136,6 +136,11 @@ def losango(cx, cy, w, h):
         (cx - w, cy)       # esquerda
     ]
 
+def setPixelGrosso(tela, x, y, cor, tamanho=2):
+    for dx in range(-tamanho//2, tamanho//2 + 1):
+        for dy in range(-tamanho//2, tamanho//2 + 1):
+            setPixel(tela, x + dx, y + dy, cor)
+
 #preenchimento
 def setFloodFill(superficie, x, y, cor_preenchimento, cor_borda):
     largura = superficie.get_width()
@@ -517,14 +522,178 @@ def setSapo(tela, x, y, fase, lingua):
         setBresenham(tela, x + 1, frente_y, x, frente_y - 20, vermelho)
 
 #bioma mar
-def setPeixe(tela, x, y):
-    pass
+def setPeixe(tela, x, y, fase):
+    azul = (80, 170, 220)
+    azul_esc = (30, 90, 160)
+    borda = (0, 40, 90)
+    branco = (255, 255, 255)
 
-def setTubarao(tela, x, y, fase):
-    pass
+    piscar = (int(fase) % 25 == 0)
 
-def setAlga(tela, x, y,fase):
-    pass
+    # ---------- ANIMAÇÃO ----------
+    ond = int(4 * math.sin(fase * 0.3))   # balanço lateral
+    cauda_ang = math.sin(fase * 0.5) * 0.6
+
+    # ---------- CORPO (ELIPSE) ----------
+    rx = 16
+    ry = 9
+
+    # borda
+    setEllipse(tela, x + ond, y, rx, ry, borda)
+
+    # preenchimento simples (flood)
+    setFloodFill(tela, x + ond, y, azul, borda)
+
+    # sombra inferior
+    for dy in range(0, ry):
+        for dx in range(-rx, rx):
+            if (dx*dx)/(rx*rx) + (dy*dy)/(ry*ry) <= 1:
+                setPixel(tela, x + ond + dx, y + dy, azul_esc)
+
+    # ---------- CAUDA (TRIÂNGULO BALANÇANDO) ----------
+    base_x = x - rx + ond
+    base_y = y
+
+    dx = int(10 * math.cos(cauda_ang))
+    dy = int(10 * math.sin(cauda_ang))
+
+    cauda = [
+        (base_x, base_y),
+        (base_x - 12 + dy, base_y - 8 - dx),
+        (base_x - 12 - dy, base_y + 8 + dx)
+    ]
+
+    for i in range(3):
+        x0, y0 = cauda[i]
+        x1, y1 = cauda[(i+1) % 3]
+        setBresenham(tela, x0, y0, x1, y1, borda)
+
+    scanline_fill_gradiente(tela, cauda, [azul_esc, azul, azul])
+
+    # ---------- OLHO (COM PISCAR) ----------
+    olho_x = x + 6 + ond
+    olho_y = y - 2
+
+    if piscar:
+        # olho fechado (linha)
+        setBresenham(tela, olho_x - 3, olho_y, olho_x + 3, olho_y, borda)
+    else:
+        # olho aberto
+        setCircle(tela, olho_x, olho_y, 3, borda)
+        setFloodFill(tela, olho_x, olho_y, branco, borda)
+
+        setCircle(tela, olho_x, olho_y, 1, (0,0,0))
+        setFloodFill(tela, olho_x, olho_y, (0,0,0), borda)
+
+
+    setCircle(tela, olho_x, olho_y, 3, borda)
+    setFloodFill(tela, olho_x, olho_y, branco, borda)
+
+    setCircle(tela, olho_x, olho_y, 1, (0,0,0))
+    setFloodFill(tela, olho_x, olho_y, (0,0,0), borda)
+
+
+def setTubarao(tela, x, y, fase, comendo=False):
+    cinza = (140, 140, 150)
+    cinza_esc = (90, 90, 100)
+    branco = (220, 220, 220)
+    borda = (30, 30, 40)
+
+    # ---------- CORPO (ELIPSE) ----------
+    rx = 38
+    ry = 14
+
+    # borda da elipse
+    setEllipse(tela, x, y, rx, ry, borda)
+
+    # preenchimento (flood fill)
+    setFloodFill(tela, x, y, cinza, borda)
+
+    # sombra barriga
+    setEllipse(tela, x, y + 4, rx - 6, ry - 6, branco)
+    setFloodFill(tela, x, y + 4, branco, borda)
+
+    # ---------- BARBATANA SUPERIOR ----------
+    barbatana = [
+        (x - 5, y - ry - 10),
+        (x + 6, y - ry + 2),
+        (x - 18, y - ry + 2)
+    ]
+
+    for i in range(3):
+        x0, y0 = barbatana[i]
+        x1, y1 = barbatana[(i + 1) % 3]
+        setBresenham(tela, x0, y0, x1, y1, borda)
+
+    scanline_fill_gradiente(tela, barbatana, [cinza_esc]*3)
+
+    # ---------- CAUDA (BALANÇANDO) ----------
+    swing = int(8 * math.sin(fase))
+
+    cauda = [
+        (x - rx + 2, y),
+        (x - rx - 20 + swing, y - 14),
+        (x - rx - 20 + swing, y + 14)
+    ]
+
+    for i in range(3):
+        x0, y0 = cauda[i]
+        x1, y1 = cauda[(i + 1) % 3]
+        setBresenham(tela, x0, y0, x1, y1, borda)
+
+    scanline_fill_gradiente(tela, cauda, [cinza_esc]*3)
+
+    # ---------- OLHO ----------
+    olho_x = x + 14
+    olho_y = y - 4
+
+    setCircle(tela, olho_x, olho_y, 3, borda)
+    setFloodFill(tela, olho_x, olho_y, (0, 0, 0), borda)
+
+    # ---------- BOCA (ABRE QUANDO COME) ----------
+    boca_x1 = x + 10
+    boca_x2 = x + 26
+    boca_y = y + 6
+
+    if comendo:
+        abertura = 6
+        # boca aberta (V)
+        setBresenham(tela, boca_x1, boca_y, boca_x2, boca_y - abertura, borda)
+        setBresenham(tela, boca_x1, boca_y, boca_x2, boca_y + abertura, borda)
+    else:
+        # boca fechada
+        setBresenham(tela, boca_x1, boca_y, boca_x2, boca_y, borda)
+
+
+def setAlga(tela, x, y, fase):
+    verde1 = (20, 120, 60)
+    verde2 = (40, 170, 90)
+    verde3 = (10, 90, 50)
+
+    altura = 35
+    hastes = 5
+
+    for i in range(hastes):
+        # espalha as hastes
+        bx = x + i * 4 - 8
+        by = y
+
+        # fase diferente pra cada haste
+        f = fase + i * 0.7
+
+        px, py = bx, by
+
+        for t in range(1, altura):
+            # curva da alga (balanço)
+            dx = int(4 * math.sin(f * 0.8 + t * 0.2))
+            nx = bx + dx
+            ny = by - t
+
+            cor = random.choice([verde1, verde2, verde3])
+
+            setBresenham(tela, px, py, nx, ny, cor)
+
+            px, py = nx, ny
 
 # textura floresta
 def fundo_grama(superficie, passo=3):
@@ -533,12 +702,12 @@ def fundo_grama(superficie, passo=3):
 
     for y in range(0, h, passo):
         for x in range(0, w, passo):
-            g = random.randint(180, 200)
-            r = random.randint(90, 120)
+            g = random.randint(200, 225)
+            r = random.randint(0, 90)
 
-        for dy in range(passo):
-            for dx in range(passo):
-                setPixel(superficie, x + dx, y + dy, (r, g, r))
+            for dy in range(passo):
+                for dx in range(passo):
+                    setPixel(superficie, x + dx, y + dy, (r, g, r))
 
     superficie.unlock()
 
@@ -579,7 +748,7 @@ def fiapos_grama(superficie, qtd=4000):
             ])
 
             setBresenham(superficie, x, y, x + dx, y - tam, cor)
-        superficie.unlock()
+    superficie.unlock()
 
 def textura_floresta(superficie):
     fundo_grama(superficie)
@@ -587,6 +756,65 @@ def textura_floresta(superficie):
     fiapos_grama(superficie, 3500)
 
 #textura mar
+def fundo_mar(superficie, passo=2):
+    w, h = superficie.get_width(), superficie.get_height()
+    superficie.lock()
+
+    for y in range(0, h, passo):
+        t = y / h
+
+        # gradiente: mais claro em cima, mais escuro embaixo
+        r = int(20 + 20 * t)
+        g = int(120 + 60 * t)
+        b = int(200 + 30 * t)
+
+        for x in range(0, w, passo):
+            for dy in range(passo):
+                for dx in range(passo):
+                    setPixel(superficie, x + dx, y + dy, (r, g, b))
+
+    superficie.unlock()
+
+def ruido_mar(superficie, qtd=10000):
+    w, h = superficie.get_width(), superficie.get_height()
+    superficie.lock()
+
+    for _ in range(qtd):
+        x = random.randint(0, w - 1)
+        y = random.randint(0, h - 1)
+
+        cor = random.choice([
+            (30, 150, 210),
+            (20, 130, 190),
+            (40, 170, 230)
+        ])
+
+        setPixel(superficie, x, y, cor)
+
+    superficie.unlock()
+
+def ondas_mar(superficie, qtd=3000):
+    w, h = superficie.get_width(), superficie.get_height()
+    superficie.lock()
+
+    for _ in range(qtd):
+        x = random.randint(0, w - 1)
+        y = random.randint(0, h - 1)
+
+        tam = random.randint(4, 10)
+
+        cor = random.choice([
+            (180, 220, 255),
+            (160, 210, 240)
+        ])
+
+        setBresenham(superficie, x, y, x + tam, y + random.choice([-1, 0, 1]), cor)
+
+    superficie.unlock()
+
 def textura_mar(superficie):
-    pass
+    fundo_mar(superficie)
+    ruido_mar(superficie, 12000)
+    ondas_mar(superficie, 2500)
+
 
