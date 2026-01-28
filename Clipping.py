@@ -1,4 +1,4 @@
-from Transformacoes import multiplicar_matrizes, escala, identidade, translacao, aplica_transformacao
+from Transformacoes import multiplicar_matrizes, escala, identidade, translacao
 from Formas import *
 
 INSIDE = 0
@@ -164,31 +164,31 @@ def desenhar_linha_recortada(superficie, x0, y0, x1, y1, janela, viewport, cor):
         return
 
     m = janela_viewport(janela, viewport)
-    listv0  = aplica_transformacao(m, [(cx0, cy0)])
-    vx0, vy0 = listv0[0]
-    listv1 = aplica_transformacao(m, [(cx1, cy1)])
-    vx1, vy1 = listv1[0]
 
-    setBresenham(superficie, vx0, vy0, vx1, vy1, cor)
-
+    setBresenham(superficie, int(cx0), int(cy0), int(cx1), int(cy1), cor)
 
 def desenhar_poligono_recortado(superficie, pontos, janela, viewport, cor):
     pontos_clip = sutherlandhodgman(pontos, janela)
     if len(pontos_clip) < 2:
         return
 
-    m = janela_viewport(janela, viewport)
-    pontos_vp = aplica_transformacao(m, pontos_clip)
-    desenhar_poligono(superficie, pontos_vp, cor)
+    for i in range(len(pontos_clip)):
+        x, y = pontos_clip[i]
+        pontos_clip[i] = int(x), int(y)
+
+    desenhar_poligono(superficie, pontos_clip, cor)
 
 def scanlineGrad_poligono_recortado(superficie, pontos, janela, viewport, cores):
     pontos_clip = sutherlandhodgman(pontos, janela)
     if len(pontos_clip) < 2:
         return
 
-    m = janela_viewport(janela, viewport)
-    pontos_vp = aplica_transformacao(m, pontos_clip)
-    if len(pontos_vp) > len(cores):
-        for i in range(len(pontos_vp)-len(cores)):
-            cores.append()
-    scanline_fill_gradiente(superficie, pontos_vp, cores)
+    if len(pontos_clip) > len(cores):
+        for i in range(len(pontos_clip)-len(cores)):
+            cores.append(cores[0])
+
+    for i in range(len(pontos_clip)):
+        x, y = pontos_clip[i]
+        pontos_clip[i] = int(x), int(y)
+
+    scanline_fill_gradiente(superficie, pontos_clip, cores)
