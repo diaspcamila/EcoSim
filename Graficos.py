@@ -838,4 +838,3 @@ def textura_mar(superficie):
     ruido_mar(superficie, 12000)
     ondas_mar(superficie, 2500)
 
-

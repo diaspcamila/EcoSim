@@ -2,6 +2,7 @@ import sys
 import Inicializacao
 from Graficos import *
 from Fonte import *
+from Transformacoes import dentro
 
 pygame.init()
 largura, altura = 900, 650
@@ -20,10 +21,6 @@ btn_start = (275, 220, 350, 70)
 btn_bioma  = (275, 320, 350, 70)
 btn_qtd    = (275, 420, 350, 70)
 btn_sair   = (275, 520, 350, 70)
-
-def dentro(mx, my, botao):
-    x, y, w, h = botao
-    return x <= mx <= x+w and y <= my <= y+h
 
 def desenhar_botao(botao, cor):
     x, y, w, h = botao
