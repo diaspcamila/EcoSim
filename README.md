@@ -1,5 +1,5 @@
 # EcoSim
-Equipe: Camila, Leticia, Marina. 
+Equipe: Camila Pinheiro, Letícia Oliveira, Marina Carvalho. 
 Simulação 2D de ecossistema (plantas, presas e predadores) feita em **Python + Pygame**.
 
 A simulação roda em *ticks*. Em cada tick:
