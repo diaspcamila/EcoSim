@@ -26,8 +26,8 @@ class Planta(SerVivo):
     def atualizar(self):
         self.fase += 0.5
 
-    def desenhar(self, tela, bioma, viewport):
+    def desenhar(self, tela, bioma, viewport, zoom=1.0):
         if bioma == 0:
-            setPlanta(tela, self.x, self.y, viewport)
+            setPlanta(tela, self.x, self.y, viewport, zoom=zoom)
         else:
-            setAlga(tela, self.x, self.y, viewport, self.fase)
+            setAlga(tela, self.x, self.y, viewport, self.fase, zoom=zoom)

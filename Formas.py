@@ -141,34 +141,56 @@ def setPixelGrosso(tela, x, y, cor, tamanho=2):
             setPixel(tela, x + dx, y + dy, cor)
 
 #preenchimento
-def setFloodFill(superficie, x, y, cor_preenchimento, cor_borda):
+def setFloodFill(superficie, x, y, cor_preenchimento, cor_borda, flip_durante=False, flip_cada=2000):
     largura = superficie.get_width()
     altura = superficie.get_height()
+
+    if not (0 <= x < largura and 0 <= y < altura):
+        return
+
+    # Se começar em borda ou já preenchido, não tem o que fazer (evita loops desnecessários)
+    cor_ini = superficie.get_at((x, y))[:3]
+    if cor_ini == cor_borda or cor_ini == cor_preenchimento:
+        return
 
     pilha = [(x, y)]
     contador = 0
 
-    while pilha:
-        px, py = pilha.pop()
+    superficie.lock()
+    try:
+        while pilha:
+            px, py = pilha.pop()
 
-        if not (0 <= px < largura and 0 <= py < altura):
-            continue
+            if not (0 <= px < largura and 0 <= py < altura):
+                continue
 
-        cor_atual = superficie.get_at((px, py))[:3]
+            cor_atual = superficie.get_at((px, py))[:3]
 
-        if cor_atual == cor_borda or cor_atual == cor_preenchimento:
-            continue
+            if cor_atual == cor_borda or cor_atual == cor_preenchimento:
+                continue
 
-        setPixel(superficie, px, py, cor_preenchimento)
+            setPixel(superficie, px, py, cor_preenchimento)
 
-        pilha.append((px + 1, py))
-        pilha.append((px - 1, py))
-        pilha.append((px, py + 1))
-        pilha.append((px, py - 1))
+            pilha.append((px + 1, py))
+            pilha.append((px - 1, py))
+            pilha.append((px, py + 1))
+            pilha.append((px, py - 1))
 
-        contador += 1
-        if contador % 5000 == 0:
+            contador += 1
+            if flip_durante and (contador % flip_cada == 0):
+                superficie.unlock()
+                pygame.display.flip()
+                pygame.event.pump()
+                superficie.lock()
+
+        if flip_durante:
             pygame.display.flip()
+    finally:
+        # garante que destrava mesmo se der erro
+        try:
+            superficie.unlock()
+        except Exception:
+            pass
 
 def setScanlineFill(superficie, pontos, cor_preenchimento):
     # Encontra Y mínimo e máximo4

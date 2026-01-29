@@ -4,7 +4,7 @@ from Formas import *
 from Clipping import desenhar_linha_recortada, desenhar_poligono_recortado, scanlineGrad_poligono_recortado
 
 #animais e plantas
-def setPlanta(tela, x, y, viewport):
+def setPlanta(tela, x, y, viewport, zoom=1.0):
     w, h = tela.get_size() #proporções da tela, para clipping
     tam_tela = (0, 0, w, h)
 
@@ -12,7 +12,7 @@ def setPlanta(tela, x, y, viewport):
     verde_escuro = (0, 140, 0)
     verde = (0, 180, 0)
 
-    s = 1.3  # escala da planta
+    s = 1.3 * zoom # escala da planta
 
     def sx(dx): return int(dx * s)
     def sy(dy): return int(dy * s)
@@ -94,7 +94,7 @@ def setMosca(tela, x, y, viewport, fase, s=0.6):
     setFloodFill(tela, x, y - int(6*s), cinza, preto)
 
 
-def setSapo(tela, x, y, fase, viewport, lingua):
+def setSapo(tela, x, y, fase, viewport, lingua, zoom=1.0):
     w, h = tela.get_size()  # proporções da tela, para clipping
     tam_tela = (0, 0, w, h)
 
@@ -103,8 +103,10 @@ def setSapo(tela, x, y, fase, viewport, lingua):
     borda = (0,20,80)
     vermelho = (255, 0, 0)
 
+    z = zoom
+
     # ---------- CORPO ----------
-    corpo = trapezio_pequeno(x, y-14, topo=26, base=40, h=20)
+    corpo = trapezio_pequeno(x, y-int(14*z), topo=int(26*z), base=int(40*z), h=int(20*z))
 
     for i in range(len(corpo)):
         x0, y0 = corpo[i]
@@ -120,7 +122,7 @@ def setSapo(tela, x, y, fase, viewport, lingua):
     scanlineGrad_poligono_recortado(tela, corpo, tam_tela, viewport, cores_corpo)
 
     # ---------- CABEÇA ----------
-    cabeca = hexagono_largo(x, y-30, w=50, h=16)
+    cabeca = hexagono_largo(x, y - int(30*z), w=int(50*z), h=int(16*z))
     cores_cabeca = [
         azul,
         azul,
@@ -137,8 +139,8 @@ def setSapo(tela, x, y, fase, viewport, lingua):
 
     scanlineGrad_poligono_recortado(tela, cabeca, tam_tela, viewport, cores_cabeca)
 
-    olho_y = y - 47
-    dx = 12
+    olho_y = y - int(47 * z)
+    dx = int(12 * z)
 
     # cores
     branco = (255,255,255)
@@ -148,28 +150,28 @@ def setSapo(tela, x, y, fase, viewport, lingua):
     for lado in (-1, 1):
         cx = x + lado * dx
 
-        setCircle(tela, cx, olho_y, 5, azul)
+        setCircle(tela, cx, olho_y, int(5*z), azul)
         setFloodFill(tela, cx, olho_y, azul, borda)
 
 
         if piscar:
             # olho fechado
-            desenhar_linha_recortada(tela, cx - 4, olho_y, cx + 4, olho_y, tam_tela, viewport, borda)
+            desenhar_linha_recortada(tela, cx - int(4*z), olho_y, cx + int(4*z), olho_y, tam_tela, viewport, borda)
         else:
 
             # branco do olho
-            setCircle(tela, cx, olho_y, 5, borda)
+            setCircle(tela, cx, olho_y, int(5*z), borda)
             setFloodFill(tela, cx, olho_y, branco, borda)
 
             # pupila
-            setCircle(tela, cx, olho_y, 2, (0,0,0))
+            setCircle(tela, cx, olho_y, int(2*z), (0,0,0))
             setFloodFill(tela, cx, olho_y, (0,0,0), borda)
 
 
     # ---------- PATAS ----------
-    chao = y + 7
-    altura = 12
-    sep = 14
+    chao = y + int(7 * z)
+    altura = int(12 * z)
+    sep = int(14 * z)
     cores_patas = [
         azul_esc,
         azul_esc,
@@ -236,27 +238,27 @@ def setSapo(tela, x, y, fase, viewport, lingua):
         desenhar_linha_recortada(tela, x + 1, frente_y, x, frente_y - 20, tam_tela, viewport, vermelho)
 
 #bioma mar
-def setPeixe(tela, x, y, viewport, fase):
+def setPeixe(tela, x, y, viewport, fase, zoom=1.0):
     w, h = tela.get_size()  # proporções da tela, para clipping
     tam_tela = (0, 0, w, h)
 
     azul = (80, 170, 220)
     azul_esc = (30, 90, 160)
-    borda = (0, 40, 90)
+    borda = (255, 40, 90)
     laranja = (255, 140, 100)
     laranja_esc = (250, 100, 80)
-    borda = (255, 40, 90)
     branco = (255, 255, 255)
+
+    z = max(0.01, float(zoom))
 
     piscar = (int(fase) % 25 == 0)
 
-    # ---------- ANIMAÇÃO ----------
-    ond = int(4 * math.sin(fase * 0.3))   # balanço lateral
+    ond = int(4 * z * math.sin(fase * 0.3))
     cauda_ang = math.sin(fase * 0.5) * 0.6
 
     # ---------- CORPO (ELIPSE) ----------
-    rx = 16
-    ry = 9
+    rx = max(2, int(16 * z))
+    ry = max(2, int(9 * z))
 
     # borda
     setEllipse(tela, x + ond, y, rx, ry, borda)
@@ -274,13 +276,13 @@ def setPeixe(tela, x, y, viewport, fase):
     base_x = x - rx + ond
     base_y = y
 
-    dx = int(10 * math.cos(cauda_ang))
-    dy = int(10 * math.sin(cauda_ang))
+    dx = int(10 * z * math.cos(cauda_ang))
+    dy = int(10 * z * math.sin(cauda_ang))
 
     cauda = [
         (base_x, base_y),
-        (base_x - 12 + dy, base_y - 8 - dx),
-        (base_x - 12 - dy, base_y + 8 + dx)
+        (base_x - int(12 * z) + dy, base_y - int(8 * z) - dx),
+        (base_x - int(12 * z) - dy, base_y + int(8 * z) + dx),
     ]
 
     for i in range(3):
@@ -290,44 +292,43 @@ def setPeixe(tela, x, y, viewport, fase):
 
     scanlineGrad_poligono_recortado(tela, cauda, tam_tela, viewport, [azul_esc, azul, azul])
 
-
-    # ---------- OLHO (COM PISCAR) ----------
-    olho_x = x + 6 + ond
-    olho_y = y - 2
+    # ---------- OLHO ----------
+    olho_x = x + int(6 * z) + ond
+    olho_y = y - int(2 * z)
 
     if piscar:
-        # olho fechado (linha)
-        desenhar_linha_recortada(tela, olho_x - 3, olho_y, olho_x + 3, olho_y, tam_tela, viewport, borda)
+        desenhar_linha_recortada(tela, olho_x - int(3 * z), olho_y, olho_x + int(3 * z), olho_y, tam_tela, viewport, borda)
     else:
-        # olho aberto
-        setCircle(tela, olho_x, olho_y, 3, (0,0,0))
-        setFloodFill(tela, olho_x, olho_y, branco, (0,0,0))
-
-        setCircle(tela, olho_x, olho_y, 1, (0,0,0))
-        setFloodFill(tela, olho_x, olho_y, (0,0,0), (0,0,0))
+        setCircle(tela, olho_x, olho_y, max(1, int(3 * z)), (0, 0, 0))
+        setFloodFill(tela, olho_x, olho_y, branco, (0, 0, 0))
+        setCircle(tela, olho_x, olho_y, max(1, int(1 * z)), (0, 0, 0))
+        setFloodFill(tela, olho_x, olho_y, (0, 0, 0), (0, 0, 0))
 
 
-    setCircle(tela, olho_x, olho_y, 3, (0,0,0))
-    setFloodFill(tela, olho_x, olho_y, branco, (0,0,0))
+    #setCircle(tela, olho_x, olho_y, 3, (0,0,0))
+    #setFloodFill(tela, olho_x, olho_y, branco, (0,0,0))
 
-    setCircle(tela, olho_x, olho_y, 1, (0,0,0))
-    setFloodFill(tela, olho_x, olho_y, (0,0,0), (0,0,0))
+    #setCircle(tela, olho_x, olho_y, 1, (0,0,0))
+    #setFloodFill(tela, olho_x, olho_y, (0,0,0), (0,0,0))
 
 
-def setTubarao(tela, x, y, fase, viewport, comendo=False):
+def setTubarao(tela, x, y, fase, viewport, comendo=False, zoom=1.0):
     w, h = tela.get_size()  # proporções da tela, para clipping
     tam_tela = (0, 0, w, h)
 
     cinza = (140, 140, 150)
     cinza_esc = (90, 90, 100)
     branco = (220, 220, 220)
+
     borda = (30, 30, 40)
+
+    z = max(0.01, float(zoom))
 
     piscar = (int(fase) % 25 == 0)
 
     # ---------- CORPO (ELIPSE) ----------
-    rx = 38
-    ry = 14
+    rx = max(2, int(38 * z))
+    ry = max(2, int(14 * z))
 
     # borda da elipse
     setEllipse(tela, x, y, rx, ry, borda)
@@ -336,14 +337,14 @@ def setTubarao(tela, x, y, fase, viewport, comendo=False):
     setFloodFill(tela, x, y, cinza, borda)
 
     # sombra barriga
-    setEllipse(tela, x, y + 4, rx - 6, ry - 6, branco)
-    setFloodFill(tela, x, y + 4, branco, borda)
+    setEllipse(tela, x, y + int(4 * z), max(2, rx - int(6 * z)), max(2, ry - int(6 * z)), branco)
+    setFloodFill(tela, x, y + int(4 * z), branco, borda)
 
     # ---------- BARBATANA SUPERIOR ----------
     barbatana = [
-        (x - 5, y - ry - 10),
-        (x + 6, y - ry + 2),
-        (x - 18, y - ry + 2)
+        (x - int(5 * z), y - ry - int(10 * z)),
+        (x + int(6 * z), y - ry + int(2 * z)),
+        (x - int(18 * z), y - ry + int(2 * z)),
     ]
 
     for i in range(3):
@@ -355,12 +356,12 @@ def setTubarao(tela, x, y, fase, viewport, comendo=False):
     scanlineGrad_poligono_recortado(tela, barbatana, tam_tela, viewport, [cinza_esc]*3)
 
     # ---------- CAUDA (BALANÇANDO) ----------
-    swing = int(8 * math.sin(fase))
+    swing = int(8 * z * math.sin(fase))
 
     cauda = [
-        (x - rx + 2, y),
-        (x - rx - 20 + swing, y - 14),
-        (x - rx - 20 + swing, y + 14)
+        (x - rx + int(2 * z), y),
+        (x - rx - int(20 * z) + swing, y - int(14 * z)),
+        (x - rx - int(20 * z) + swing, y + int(14 * z)),
     ]
 
     for i in range(3):
@@ -371,28 +372,28 @@ def setTubarao(tela, x, y, fase, viewport, comendo=False):
 
     scanlineGrad_poligono_recortado(tela, cauda, tam_tela, viewport, [cinza_esc]*3)
 
-     # ---------- OLHO (COM PISCAR) ----------
-    olho_x = x + 14
-    olho_y = y - 4
+    # ---------- OLHO (COM PISCAR) ----------
+    olho_x = x + int(14 * z)
+    olho_y = y - int(4 * z)
 
     if piscar:
         # olho fechado (linha)
-        setBresenham(tela, olho_x - 3, olho_y, olho_x + 3, olho_y, borda)
+        setBresenham(tela, olho_x - int(3 * z), olho_y, olho_x + int(3 * z), olho_y, borda)
     else:
         # olho aberto
-        setCircle(tela, olho_x, olho_y, 3, borda)
+        setCircle(tela, olho_x, olho_y, max(1, int(3 * z)), borda)
         setFloodFill(tela, olho_x, olho_y, (255, 255, 255), borda)
 
-        setCircle(tela, olho_x, olho_y, 1, (0,0,0))
-        setFloodFill(tela, olho_x, olho_y, (0,0,0), borda)
+        setCircle(tela, olho_x, olho_y, max(1, int(1 * z)), (0, 0, 0))
+        setFloodFill(tela, olho_x, olho_y, (0, 0, 0), borda)
 
     # ---------- BOCA (ABRE QUANDO COME) ----------
-    boca_x1 = x + 16
-    boca_x2 = x + 32
-    boca_y = y + 6
+    boca_x1 = x + int(16 * z)
+    boca_x2 = x + int(32 * z)
+    boca_y = y + int(6 * z)
 
     if comendo:
-        abertura = 6
+        abertura = int(6 * z)
         # boca aberta (V)
         desenhar_linha_recortada(tela, boca_x1, boca_y, boca_x2, boca_y - abertura, tam_tela, viewport, borda)
         desenhar_linha_recortada(tela, boca_x1, boca_y, boca_x2, boca_y + abertura, tam_tela, viewport, borda)
@@ -401,7 +402,7 @@ def setTubarao(tela, x, y, fase, viewport, comendo=False):
         desenhar_linha_recortada(tela, boca_x1, boca_y, boca_x2, boca_y, tam_tela, viewport, borda)
 
 
-def setAlga(tela, x, y, viewport, fase):
+def setAlga(tela, x, y, viewport, fase, zoom=1.0):
     w, h = tela.get_size()  # proporções da tela, para clipping
     tam_tela = (0, 0, w, h)
 
@@ -409,10 +410,12 @@ def setAlga(tela, x, y, viewport, fase):
     verde2 = (40, 170, 90)
     verde3 = (10, 90, 50)
 
+    z = max(0.01, float(zoom))
+
     ramos = [
-        {"dx": -8, "altura": 22, "amp": 2.0, "invert": False},  # esquerda
-        {"dx":  0, "altura": 32, "amp": 3.5, "invert": True},   # meio (S invertido)
-        {"dx":  8, "altura": 22, "amp": 2.0, "invert": False},  # direita
+        {"dx": int(-8 * z), "altura": int(22 * z), "amp": 2.0 * z, "invert": False},  # esquerda
+        {"dx": int(0 * z), "altura": int(32 * z), "amp": 3.5 * z, "invert": True},  # meio (S invertido)
+        {"dx": int(8 * z), "altura": int(22 * z), "amp": 2.0 * z, "invert": False},  # direita
     ]
 
     for i, r in enumerate(ramos):
@@ -421,7 +424,7 @@ def setAlga(tela, x, y, viewport, fase):
 
         px, py = bx, by
 
-        for t in range(1, r["altura"]):
+        for t in range(1, max(2, r["altura"])):
             direcao = -1 if r["invert"] else 1
 
             curva = math.sin((t * 0.25) + fase * 0.6) * r["amp"] * direcao

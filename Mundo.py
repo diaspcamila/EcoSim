@@ -7,6 +7,7 @@ from SerVivo import SerVivo
 from Planta import Planta
 from Animal import Animal
 from Predador import Predador
+from Presa import Presa
 from Transformacoes import aplica_transformacao, dentro
 from Clipping import janela_viewport
 
@@ -21,7 +22,8 @@ class Mundo:
         SerVivo.escala = escala
 
         self.plantas: list[Planta] = []
-        self.animais: list[Animal] = []
+        # `Animal` base não declara `desenhar`, mas as subclasses (Presa/Predador) declaram.
+        self.animais: list[Animal | Presa | Predador] = []
         self.tela: pygame.Surface | None = None
         self.textura_fundo = None
 
@@ -127,13 +129,13 @@ class Mundo:
                 (sx, sy) = aplica_transformacao(mundo, [(p.x, p.y)])[0]
                 ox, oy = p.x, p.y
                 p.x, p.y = sx, sy
-                p.desenhar(self.tela, self.bioma, viewport)
+                p.desenhar(self.tela, self.bioma, viewport, self.zoom)
                 p.x, p.y = ox, oy
             for a in self.animais:
                 (sx, sy) = aplica_transformacao(mundo, [(a.x, a.y)])[0]
                 ox, oy = a.x, a.y
                 a.x, a.y = sx, sy
-                a.desenhar(self.tela, self.bioma, viewport)
+                a.desenhar(self.tela, self.bioma, viewport, self.zoom)
                 a.x, a.y = ox, oy
 
         except Exception:
@@ -151,8 +153,7 @@ class Mundo:
             setScanlineFill(self.tela, coords, (100, 200, 255))
             setBordaRetangulo(self.tela, vxmin, vymin, w, h, (50, 60, 85))
 
-        self.desenhar_zoom(viewport)
-        #entidades no viewport
+        # entidades no viewport (minimap)
         try:
             for p in self.plantas:
                 x, y = aplica_transformacao(minimap, [(p.x, p.y)])[0]
@@ -173,6 +174,9 @@ class Mundo:
 
         except Exception:
             traceback.print_exc()
+
+        # botões de zoom por último (sempre por cima do minimapa)
+        self.desenhar_zoom(viewport)
 
         pygame.display.flip()
 
