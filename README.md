@@ -14,18 +14,14 @@ A simulação roda em *ticks*. Em cada tick:
 
 - [Visão geral](#visão-geral)
 - [Requisitos](#requisitos)
-- [Instalação (Windows)](#instalação-windows)
+- [Instalação](#instalação)
 - [Como executar](#como-executar)
-  - [Executar com menu (recomendado)](#executar-com-menu-recomendado)
-  - [Executar sem menu (avançado)](#executar-sem-menu-avançado)
+  - [Executar com menu](#executar-com-menu)
 - [Controles e interação](#controles-e-interação)
 - [Configuração rápida](#configuração-rápida)
 - [Como funciona (alto nível)](#como-funciona-alto-nível)
 - [Estrutura do projeto](#estrutura-do-projeto)
 - [Regras da simulação (detalhes do modelo)](#regras-da-simulação-detalhes-do-modelo)
-- [Troubleshooting](#troubleshooting)
-- [Contribuição](#contribuição)
-- [Licença](#licença)
 
 ---
 
