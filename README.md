@@ -1,5 +1,6 @@
 # EcoSim
-Equipe: Camila Pinheiro, Letícia Oliveira, Marina Carvalho. 
+Trabalho de Computação Gráfica 2025.3, UECE. Equipe: Camila Pinheiro, Letícia Oliveira, Marina Carvalho. 
+
 Simulação 2D de ecossistema (plantas, presas e predadores) feita em **Python + Pygame**.
 
 A simulação roda em *ticks*. Em cada tick:
